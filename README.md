@@ -1,92 +1,45 @@
-<!-- PROJECT BANNER -->
-<p align="center">
-  <img src="docs/banner.png" alt="LaaSy Corporate Travel Banner" width="100%">
-</p>
+# ✈️ LaaSy Corporate Travel Platform – Full Stack Demo
 
-<h1 align="center">✈️ LaaSy Corporate Travel Platform</h1>
-<p align="center">
-  <strong>Modern Corporate Travel SaaS — built with FastAPI, MySQL, JWT Auth, and React.</strong><br>
-  <em>Multi-tenant, Policy-Aware, AI-Ready.</em>
-</p>
-
-<p align="center">
-  <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white" alt="FastAPI"></a>
-  <a href="https://www.mysql.com/"><img src="https://img.shields.io/badge/DB-MySQL-00758F?logo=mysql&logoColor=white" alt="MySQL"></a>
-  <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Frontend-Vite-646CFF?logo=vite&logoColor=white" alt="Vite"></a>
-  <a href="https://jwt.io/"><img src="https://img.shields.io/badge/Auth-JWT-orange?logo=jsonwebtokens&logoColor=white" alt="JWT"></a>
-  <a href="https://docs.github.com/actions"><img src="https://img.shields.io/badge/CI-CD-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white" alt="CI/CD"></a>
-  <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Container-Docker-2496ED?logo=docker&logoColor=white" alt="Docker"></a>
-</p>
+> Enterprise-grade Corporate Travel Platform built with  
+> **FastAPI + MySQL + JWT + Structured Logging** on the backend and  
+> **React (Vite) + Tailwind + JWT + Client Logging** on the frontend.
 
 ---
 
-## 🚀 Overview
+## 🧩 Overview
 
-**LaaSy Corporate Travel** is a next-generation corporate booking and travel policy management platform.  
-It allows organizations to:
-- Create and manage **travel policies**
-- Book **flights, hotels, and cars**
-- Manage **arranger and traveler** roles
-- Generate **compliance and spend** reports
-- Integrate easily into enterprise systems via APIs
+Run the entire LaaSy stack locally in minutes.  
+This release adds **structured logging, correlation IDs, and a client log sink** for end-to-end observability.
+
+### Includes
+- ✅ **FastAPI backend** with MySQL, JWT auth & structured logs  
+- 💻 **React frontend** (Vite + Tailwind) with ErrorBoundary and client logging  
+- 📊 Reports pages (Spend + Compliance)  
+- 🧱 Dockerfiles for both services  
+- 🔐 Role-based menu control (Admin & TravelManager see Reports)
 
 ---
 
-## 🧩 Architecture
+## ⚙️ Architecture
 
 ```
 
-frontend/           → React + Vite + Tailwind (mock or live API)
-backend/            → FastAPI + SQLAlchemy + JWT + Alembic
-devcorptravel_sql/  → MySQL schema, reference & demo seeds, migrations
-.github/workflows/  → CI/CD pipelines for Flyway & Liquibase
+laasy/
+├── backend/         # FastAPI + SQLAlchemy + JWT + Logging + /logs sink
+├── web/             # React + Vite + JWT auth + Reports + client logs
+├── devcorptravel_sql/  # MySQL schema + seeds
+└── docker-compose.yml  # optional combined stack
 
 ````
 
-**Tech Stack:**
-| Layer | Technologies |
-|-------|---------------|
-| Backend | FastAPI · SQLAlchemy · Alembic · JWT |
-| Frontend | React (Vite) · TailwindCSS |
-| Database | MySQL 8 (`devcorptravel`) |
-| Auth | JWT + bcrypt |
-| CI/CD | GitHub Actions (Flyway + Liquibase) |
-| Infra | Docker · ECS (optional) |
-
 ---
 
-## 🗄 Database Setup
+## 🚀 Quick Start
 
-### Run with MySQL CLI
-```bash
-mysql -u root -p < devcorptravel_sql/devcorptravel_schema.sql
-mysql -u root -p < devcorptravel_sql/devcorptravel_reference_seed.sql
-mysql -u root -p < devcorptravel_sql/devcorptravel_demo_seed.sql
-````
-
-### Flyway
+### 1️⃣ Backend
 
 ```bash
-flyway -url="jdbc:mysql://localhost:3306/devcorptravel" \
-  -user=root -password=root migrate
-```
-
-### Liquibase
-
-```bash
-liquibase --url="jdbc:mysql://localhost:3306/devcorptravel" \
-  --username=root --password=root \
-  --changeLogFile=devcorptravel_sql/liquibase/changelog-master.yaml update
-```
-
----
-
-## ⚙️ Backend (FastAPI + MySQL + JWT)
-
-### Run locally
-
-```bash
-cd laasy-backend-mysql-jwt
+unzip laasy-backend-mysql-jwt-logging.zip && cd laasy-backend-mysql-jwt-logging
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
@@ -94,109 +47,139 @@ export DATABASE_URL="mysql+pymysql://root:root@127.0.0.1:3306/devcorptravel"
 export ORG_EXTERNAL_ID="acme-001"
 export JWT_SECRET="change-me"
 
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log
 # → http://localhost:8000/docs
-```
+````
 
-### Docker
+### 2️⃣ Frontend
 
 ```bash
-docker build -t laasy-backend .
-docker run -p 8000:8000 \
-  -e DATABASE_URL="mysql+pymysql://root:root@host.docker.internal:3306/devcorptravel" \
-  -e ORG_EXTERNAL_ID=acme-001 \
-  -e JWT_SECRET=change-me laasy-backend
+unzip laasy-webclient-logging.zip && cd laasy-webclient-logging
+cp .env.example .env
+npm install
+npm run dev
+# → http://localhost:5173
+```
+
+### 3️⃣ Optional (Compose All)
+
+```bash
+docker compose up --build
 ```
 
 ---
 
 ## 🔐 Auth Flow
 
-| Step     | Endpoint              | Example                                                                               |
-| -------- | --------------------- | ------------------------------------------------------------------------------------- |
-| Register | `POST /auth/register` | `curl -F email=admin@acme.com -F password=secret http://localhost:8000/auth/register` |
-| Token    | `POST /auth/token`    | `curl -d 'username=admin@acme.com&password=secret' http://localhost:8000/auth/token`  |
-| Use      | Add header            | `Authorization: Bearer <token>`                                                       |
+| Step      | Endpoint              | Example                         |
+| :-------- | :-------------------- | :------------------------------ |
+| Register  | `POST /auth/register` | Form: `email`, `password`       |
+| Token     | `POST /auth/token`    | Form: `username`, `password`    |
+| Protected | Use Bearer token      | `Authorization: Bearer <token>` |
 
 ---
 
-## 📊 Reports
+## 🧾 API Highlights
 
-| Endpoint                  | Description                                 |
-| ------------------------- | ------------------------------------------- |
-| `GET /reports/spend`      | Monthly booking spend (USD, 6-month window) |
-| `GET /reports/compliance` | In-policy vs total bookings                 |
+| Category | Endpoint                                | Description                         |       |                                    |
+| :------- | :-------------------------------------- | :---------------------------------- | ----- | ---------------------------------- |
+| Auth     | `/auth/register`, `/auth/token`         | JWT authentication                  |       |                                    |
+| Search   | `/search/flights                        | hotels                              | cars` | Mock offers with policy evaluation |
+| Booking  | `/booking`                              | Creates booking + trip records      |       |                                    |
+| Trips    | `/trips`                                | View booked trips                   |       |                                    |
+| Reports  | `/reports/spend`, `/reports/compliance` | Spend & policy analytics            |       |                                    |
+| Logging  | `/logs`                                 | Accepts frontend client logs (JSON) |       |                                    |
 
 ---
 
-## 💻 Frontend (React + Vite)
+## 🧠 Logging & Observability
 
-```bash
-cd laasy-webclient
-cp .env.example .env
-# Set:
-# VITE_MOCK_MODE=false
-# VITE_API_BASE=http://localhost:8000
-npm install
-npm run dev
-# → http://localhost:5173
+### 🔹 Backend
+
+* Structured JSON logs via `python-json-logger`
+* Automatic `X-Request-Id` correlation for each request
+* Context fields: `asctime level name message request_id path org`
+* Sink: `POST /logs` for browser errors/events
+
+Example:
+
+```json
+{"asctime":"2025-10-15T18:20:00Z",
+ "levelname":"INFO",
+ "name":"api",
+ "message":{"event":"http_request","path":"/trips","status":200,"duration_ms":23},
+ "request_id":"8a6...","org":"acme-001"}
 ```
 
+### 🔹 Frontend
+
+* `src/lib/logger.ts` adds:
+
+  * `makeRequestId()` + `sendClientLog()` to `/logs`
+  * `logInfo()`, `logError()` helpers (auto-send to backend)
+* ErrorBoundary captures React runtime errors and posts structured logs
+* Every API call includes `X-Request-Id` + duration metrics
+
 ---
 
-## 🔁 CI/CD Workflows
+## 📊 Reports Page
 
-| Workflow                | Trigger       | Description                                    |
-| ----------------------- | ------------- | ---------------------------------------------- |
-| `db-flyway-pr.yml`      | Pull Request  | Validates Flyway migrations in ephemeral MySQL |
-| `db-flyway-prod.yml`    | Merge to main | Runs Flyway migration in production            |
-| `db-liquibase-pr.yml`   | Pull Request  | Validates Liquibase changelogs                 |
-| `db-liquibase-prod.yml` | Merge to main | Updates DB via Liquibase                       |
-| `db-flyway-demo.yml`    | Manual        | Seeds or cleans demo data                      |
+Accessible to `OrgAdmin` and `TravelManager` only.
 
-**Secrets required**
+* **Spend Report:** Monthly booking volume (USD, last 6 months)
+* **Compliance Report:** In-policy vs total bookings rates
 
+---
+
+## 🧱 Environment Variables
+
+| Variable               | Default                                                  | Purpose                |
+| :--------------------- | :------------------------------------------------------- | :--------------------- |
+| `DATABASE_URL`         | `mysql+pymysql://root:root@127.0.0.1:3306/devcorptravel` | Backend DB connection  |
+| `ORG_EXTERNAL_ID`      | `acme-001`                                               | Tenant key             |
+| `JWT_SECRET`           | `change-me`                                              | JWT signing secret     |
+| `VITE_API_BASE`        | `http://localhost:8000`                                  | Frontend API URL       |
+| `VITE_ORG_EXTERNAL_ID` | `acme-001`                                               | Frontend tenant header |
+
+---
+
+## 🧾 Example Logs End-to-End
+
+1. Browser calls `GET /trips` with `X-Request-Id = 1234`.
+2. Backend logs:
+
+```json
+{"message":{"event":"http_request","path":"/trips","status":200},"request_id":"1234"}
 ```
-MYSQL_HOST, MYSQL_PORT, MYSQL_DB, MYSQL_USER, MYSQL_PASSWORD
+
+3. Frontend posts to `/logs`:
+
+```json
+{"level":"info","message":"api_ok","context":{"url":"/trips","status":200,"requestId":"1234"}}
 ```
 
----
-
-## 🧱 Alembic (Schema Diffs)
-
-```bash
-# Create migration
-alembic -x DATABASE_URL="$DATABASE_URL" revision --autogenerate -m "add new table"
-# Apply
-alembic -x DATABASE_URL="$DATABASE_URL" upgrade head
-```
+4. Both records share the same `request_id` → full correlation.
 
 ---
 
-## 🧠 Roadmap
+## 🔧 Production Tips
 
-* [ ] Integrate full web JWT login flow
-* [ ] Add refresh tokens + role-based route guards
-* [ ] Extend reports: top suppliers, team-level spend
-* [ ] Add AI-driven price ranking & disruption alerts
-* [ ] Build admin dashboard (React + ShadCN UI)
-
----
-
-## 🧾 License
-
-© 2025 **LaaSy Inc.** — All rights reserved.
-For internal demo and evaluation use.
+* Output logs to stdout and ship via AWS CloudWatch, ELK, or Datadog.
+* Redact PII before logging.
+* Add sampling to `/logs` endpoint if traffic is high.
+* Extend with OpenTelemetry for distributed tracing.
 
 ---
 
-## 📸 Screenshots & Demo
+## 🧠 Next Steps
 
-> Place images in `/docs` and reference here.
+* [ ] Add dashboard charts (Recharts or ECharts)
+* [ ] Integrate AI-based price recommendations
+* [ ] Wire to RDS and Grafana for observability
+* [ ] Add SSO (OIDC / Okta / Azure AD)
 
+---
 
-## ❤️ Credits
+## 🖼 Docs & Screenshots
 
-Built with ❤️ by **LaaSy Engineering** — powered by OpenAI + FastAPI + MySQL.
-
-```
+Store screenshots and banner in `/docs/` and reference in this README:
