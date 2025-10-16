@@ -1,56 +1,79 @@
-# 🧭 LaaSy Corporate Travel Platform
 
-> A modern, multi-tenant **Corporate Travel Platform** built with **FastAPI**, **MySQL**, **JWT auth**, and **React (Vite)** for the web client.
-> Includes CI/CD via GitHub Actions, database migrations (Flyway & Liquibase), and a ready-to-use demo dataset.
+```markdown
+<!-- PROJECT BANNER -->
+<p align="center">
+  <img src="docs/banner.png" alt="LaaSy Corporate Travel Banner" width="100%">
+</p>
+
+<h1 align="center">✈️ LaaSy Corporate Travel Platform</h1>
+<p align="center">
+  <strong>Modern Corporate Travel SaaS — built with FastAPI, MySQL, JWT Auth, and React.</strong><br>
+  <em>Multi-tenant, Policy-Aware, AI-Ready.</em>
+</p>
+
+<p align="center">
+  <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white" alt="FastAPI"></a>
+  <a href="https://www.mysql.com/"><img src="https://img.shields.io/badge/DB-MySQL-00758F?logo=mysql&logoColor=white" alt="MySQL"></a>
+  <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Frontend-Vite-646CFF?logo=vite&logoColor=white" alt="Vite"></a>
+  <a href="https://jwt.io/"><img src="https://img.shields.io/badge/Auth-JWT-orange?logo=jsonwebtokens&logoColor=white" alt="JWT"></a>
+  <a href="https://docs.github.com/actions"><img src="https://img.shields.io/badge/CI-CD-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white" alt="CI/CD"></a>
+  <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Container-Docker-2496ED?logo=docker&logoColor=white" alt="Docker"></a>
+</p>
 
 ---
 
 ## 🚀 Overview
 
-The platform enables organizations to:
-
-* Manage corporate travel policies (rules, limits, in/out-of-policy)
-* Search and book flights, hotels, and cars
-* Handle arranger and traveler roles
-* View bookings, trips, and reports
-* Generate compliance and spend insights
+**LaaSy Corporate Travel** is a next-generation corporate booking and travel policy management platform.  
+It allows organizations to:
+- Create and manage **travel policies**
+- Book **flights, hotels, and cars**
+- Manage **arranger and traveler** roles
+- Generate **compliance and spend** reports
+- Integrate easily into enterprise systems via APIs
 
 ---
 
 ## 🧩 Architecture
 
 ```
-frontend/           → React + Vite web client (mock/offline or live API)
-backend/            → FastAPI + SQLAlchemy + JWT (MySQL connected)
-devcorptravel_sql/  → Database schema, seeds, migrations (Flyway + Liquibase)
-.github/workflows/  → CI/CD pipelines for DB migrations
-```
 
-**Stack:**
+frontend/           → React + Vite + Tailwind (mock or live API)
+backend/            → FastAPI + SQLAlchemy + JWT + Alembic
+devcorptravel_sql/  → MySQL schema, reference & demo seeds, migrations
+.github/workflows/  → CI/CD pipelines for Flyway & Liquibase
 
-* **Backend:** FastAPI · SQLAlchemy · Alembic · PyMySQL
-* **Database:** MySQL 8 (schema: `devcorptravel`)
-* **Auth:** JWT + bcrypt password hashing
-* **Frontend:** React (Vite, Tailwind)
-* **CI/CD:** GitHub Actions (Flyway & Liquibase)
-* **Infra:** Docker-ready for local or ECS deployment
+````
+
+**Tech Stack:**
+| Layer | Technologies |
+|-------|---------------|
+| Backend | FastAPI · SQLAlchemy · Alembic · JWT |
+| Frontend | React (Vite) · TailwindCSS |
+| Database | MySQL 8 (`devcorptravel`) |
+| Auth | JWT + bcrypt |
+| CI/CD | GitHub Actions (Flyway + Liquibase) |
+| Infra | Docker · ECS (optional) |
 
 ---
 
-## 🗄 Database
+## 🗄 Database Setup
 
-**Schema name:** `devcorptravel`
+### Run with MySQL CLI
+```bash
+mysql -u root -p < devcorptravel_sql/devcorptravel_schema.sql
+mysql -u root -p < devcorptravel_sql/devcorptravel_reference_seed.sql
+mysql -u root -p < devcorptravel_sql/devcorptravel_demo_seed.sql
+````
 
-Run migrations using either Flyway or Liquibase.
-
-### Option 1 — Flyway
+### Flyway
 
 ```bash
 flyway -url="jdbc:mysql://localhost:3306/devcorptravel" \
   -user=root -password=root migrate
 ```
 
-### Option 2 — Liquibase
+### Liquibase
 
 ```bash
 liquibase --url="jdbc:mysql://localhost:3306/devcorptravel" \
@@ -58,19 +81,9 @@ liquibase --url="jdbc:mysql://localhost:3306/devcorptravel" \
   --changeLogFile=devcorptravel_sql/liquibase/changelog-master.yaml update
 ```
 
-### Seeds
-
-```bash
-# Reference data (roles, permissions)
-mysql -u root -p < devcorptravel_sql/devcorptravel_reference_seed.sql
-
-# Optional demo (Acme Corporation)
-mysql -u root -p < devcorptravel_sql/devcorptravel_demo_seed.sql
-```
-
 ---
 
-## ⚙️ Backend (FastAPI)
+## ⚙️ Backend (FastAPI + MySQL + JWT)
 
 ### Run locally
 
@@ -83,7 +96,7 @@ export DATABASE_URL="mysql+pymysql://root:root@127.0.0.1:3306/devcorptravel"
 export ORG_EXTERNAL_ID="acme-001"
 export JWT_SECRET="change-me"
 
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --port 8000
 # → http://localhost:8000/docs
 ```
 
@@ -101,11 +114,11 @@ docker run -p 8000:8000 \
 
 ## 🔐 Auth Flow
 
-| Step      | Endpoint              | Example                                                                               |
-| --------- | --------------------- | ------------------------------------------------------------------------------------- |
-| Register  | `POST /auth/register` | `curl -F email=admin@acme.com -F password=secret http://localhost:8000/auth/register` |
-| Token     | `POST /auth/token`    | `curl -d 'username=admin@acme.com&password=secret' http://localhost:8000/auth/token`  |
-| Protected | Add header            | `Authorization: Bearer <token>`                                                       |
+| Step     | Endpoint              | Example                                                                               |
+| -------- | --------------------- | ------------------------------------------------------------------------------------- |
+| Register | `POST /auth/register` | `curl -F email=admin@acme.com -F password=secret http://localhost:8000/auth/register` |
+| Token    | `POST /auth/token`    | `curl -d 'username=admin@acme.com&password=secret' http://localhost:8000/auth/token`  |
+| Use      | Add header            | `Authorization: Bearer <token>`                                                       |
 
 ---
 
@@ -114,32 +127,34 @@ docker run -p 8000:8000 \
 | Endpoint                  | Description                                 |
 | ------------------------- | ------------------------------------------- |
 | `GET /reports/spend`      | Monthly booking spend (USD, 6-month window) |
-| `GET /reports/compliance` | Policy compliance ratio from booking items  |
+| `GET /reports/compliance` | In-policy vs total bookings                 |
 
 ---
 
-## 💻 Frontend
+## 💻 Frontend (React + Vite)
 
 ```bash
 cd laasy-webclient
 cp .env.example .env
-# set VITE_MOCK_MODE=false
-# set VITE_API_BASE=http://localhost:8000
+# Set:
+# VITE_MOCK_MODE=false
+# VITE_API_BASE=http://localhost:8000
 npm install
 npm run dev
+# → http://localhost:5173
 ```
 
 ---
 
 ## 🔁 CI/CD Workflows
 
-| Workflow                | Trigger       | Description                             |
-| ----------------------- | ------------- | --------------------------------------- |
-| `db-flyway-pr.yml`      | Pull Request  | Validates migrations in ephemeral MySQL |
-| `db-flyway-prod.yml`    | Merge to main | Runs Flyway migration in production     |
-| `db-liquibase-pr.yml`   | Pull Request  | Validates Liquibase changelogs          |
-| `db-liquibase-prod.yml` | Merge to main | Updates DB via Liquibase                |
-| `db-flyway-demo.yml`    | Manual        | Seeds or cleans demo data               |
+| Workflow                | Trigger       | Description                                    |
+| ----------------------- | ------------- | ---------------------------------------------- |
+| `db-flyway-pr.yml`      | Pull Request  | Validates Flyway migrations in ephemeral MySQL |
+| `db-flyway-prod.yml`    | Merge to main | Runs Flyway migration in production            |
+| `db-liquibase-pr.yml`   | Pull Request  | Validates Liquibase changelogs                 |
+| `db-liquibase-prod.yml` | Merge to main | Updates DB via Liquibase                       |
+| `db-flyway-demo.yml`    | Manual        | Seeds or cleans demo data                      |
 
 **Secrets required**
 
@@ -149,29 +164,48 @@ MYSQL_HOST, MYSQL_PORT, MYSQL_DB, MYSQL_USER, MYSQL_PASSWORD
 
 ---
 
-## 🧱 Alembic (for future DB diffs)
+## 🧱 Alembic (Schema Diffs)
 
 ```bash
-alembic -x DATABASE_URL="$DATABASE_URL" revision --autogenerate -m "add new column"
+# Create migration
+alembic -x DATABASE_URL="$DATABASE_URL" revision --autogenerate -m "add new table"
+# Apply
 alembic -x DATABASE_URL="$DATABASE_URL" upgrade head
 ```
 
 ---
 
-## 🧠 Next Steps
+## 🧠 Roadmap
 
-* [ ] Wire web login to JWT auth flow
-* [ ] Add refresh tokens & role-based access guards
-* [ ] Extend reports (top suppliers, OOP by team)
-* [ ] Add AI-driven price-ranking service
+* [ ] Integrate full web JWT login flow
+* [ ] Add refresh tokens + role-based route guards
+* [ ] Extend reports: top suppliers, team-level spend
+* [ ] Add AI-driven price ranking & disruption alerts
+* [ ] Build admin dashboard (React + ShadCN UI)
 
 ---
 
 ## 🧾 License
 
-© 2025 LaaSy Inc. — All rights reserved.
-For internal and demo purposes only.
+© 2025 **LaaSy Inc.** — All rights reserved.
+For internal demo and evaluation use.
 
 ---
 
-Would you like me to include **badges** (e.g. Python, FastAPI, MySQL, Flyway, Docker) and a **project banner image** section at the top for GitHub presentation?
+## 📸 Screenshots & Demo
+
+> Place images in `/docs` and reference here.
+
+```markdown
+![Dashboard](docs/dashboard.png)
+![Policy Management](docs/policies.png)
+![Reports](docs/reports.png)
+```
+
+---
+
+## ❤️ Credits
+
+Built with ❤️ by **LaaSy Engineering** — powered by OpenAI + FastAPI + MySQL.
+
+```
