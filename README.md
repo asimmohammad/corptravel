@@ -1,5 +1,3 @@
-
-```markdown
 <!-- PROJECT BANNER -->
 <p align="center">
   <img src="docs/banner.png" alt="LaaSy Corporate Travel Banner" width="100%">
@@ -196,13 +194,6 @@ For internal demo and evaluation use.
 
 > Place images in `/docs` and reference here.
 
-```markdown
-![Dashboard](docs/dashboard.png)
-![Policy Management](docs/policies.png)
-![Reports](docs/reports.png)
-```
-
----
 
 ## ❤️ Credits
 
