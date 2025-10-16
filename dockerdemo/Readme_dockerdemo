@@ -1,0 +1,206 @@
+
+# ✈️ LaaSy Corporate Travel — Demo Stack
+
+> Full-stack demo environment for the **LaaSy Corporate Travel Platform**, powered by **FastAPI + MySQL + JWT** on the backend and **React + Vite** on the frontend.
+
+---
+
+## 🧩 Overview
+
+This repository lets you run the entire LaaSy platform locally using **Docker Compose** — no manual setup required.
+
+It includes:
+- ✅ **MySQL 8** preloaded with the `devcorptravel` schema, reference data, and demo tenant (`acme-001`)
+- ⚙️ **FastAPI backend** with JWT authentication and REST APIs
+- 💻 **React web client** with full login, booking, and trips flow
+- 🧱 Configurable environment variables for easy customization
+
+---
+
+## 🧱 Architecture
+
+```
+
+laasy-demo-stack/
+├── docker-compose.yml
+├── mysql-init/            # MySQL schema + demo seed auto-applied on startup
+├── backend/               # FastAPI + SQLAlchemy + JWT backend (from laasy-backend-mysql-jwt.zip)
+└── web/                   # React web client (from laasy-webclient-auth.zip)
+
+```
+
+---
+
+## ⚙️ Prerequisites
+
+- Docker Desktop (or Docker Engine + Compose plugin)
+- Ports **3306**, **8000**, and **5173** available
+- 4GB+ free RAM recommended
+
+---
+
+## 🚀 Quick Start
+
+### 1️⃣ Prepare folders
+Unzip the following archives into the stack directory:
+```
+
+laasy-demo-stack/
+├── backend/   ← from laasy-backend-mysql-jwt.zip
+└── web/       ← from laasy-webclient-auth.zip
+
+````
+
+### 2️⃣ Start the stack
+```bash
+cd laasy-demo-stack
+docker compose up --build
+````
+
+Wait until you see:
+
+```
+✅ MySQL init completed
+✅ FastAPI running on http://0.0.0.0:8000
+✅ Web available at http://localhost:5173
+```
+
+---
+
+## 🌐 Access Points
+
+| Service               | URL                                                      | Description                                  |
+| --------------------- | -------------------------------------------------------- | -------------------------------------------- |
+| **Frontend (React)**  | [http://localhost:5173](http://localhost:5173)           | Corporate travel booking portal              |
+| **Backend (FastAPI)** | [http://localhost:8000/docs](http://localhost:8000/docs) | Swagger API documentation                    |
+| **MySQL DB**          | `localhost:3306`                                         | Credentials: `root` / `root` (for demo only) |
+
+---
+
+## 👤 Demo Login Flow
+
+1. **Register an account**
+
+   ```
+   Email: admin@acme.com
+   Password: secret
+   ```
+
+   (Registration form is available on `/login`)
+
+2. **Login**
+
+   * Log in using your credentials
+   * A JWT token is stored locally for API calls
+
+3. **Explore**
+
+   * Search for flights, hotels, or cars
+   * Proceed to checkout
+   * Confirm booking → view it under “My Trips”
+
+---
+
+## 🧾 API Highlights
+
+| Category     | Endpoint                                | Description                         |
+| ------------ | --------------------------------------- | ----------------------------------- |
+| **Auth**     | `/auth/register` / `/auth/token`        | Register or obtain JWT              |
+| **Policies** | `/policies`                             | View or publish policies            |
+| **Search**   | `/search/flights`                       | Mock offers policy-evaluated        |
+| **Booking**  | `/booking`                              | Create a booking (records in MySQL) |
+| **Trips**    | `/trips`                                | View booked trips                   |
+| **Reports**  | `/reports/spend`, `/reports/compliance` | Org-level analytics                 |
+
+---
+
+## 🧰 Developer Tips
+
+### Environment Variables
+
+| Variable          | Default                                              | Description                    |
+| ----------------- | ---------------------------------------------------- | ------------------------------ |
+| `ORG_EXTERNAL_ID` | `acme-001`                                           | Tenant/org key used in headers |
+| `JWT_SECRET`      | `change-me`                                          | Secret for JWT signing         |
+| `DATABASE_URL`    | `mysql+pymysql://root:root@mysql:3306/devcorptravel` | DB connection string           |
+
+---
+
+## 🔐 Security Notes
+
+* Passwords are hashed using bcrypt.
+* JWT tokens expire after 2 hours (configurable in backend).
+* Demo DB uses default credentials; **never use in production.**
+* For real deployment, use AWS RDS or PlanetScale with unique secrets.
+
+---
+
+## 🧠 Troubleshooting
+
+| Issue                           | Cause                 | Fix                                                        |
+| ------------------------------- | --------------------- | ---------------------------------------------------------- |
+| `Access denied for user 'root'` | MySQL not ready yet   | Wait 10–15 seconds, rerun `docker compose up`              |
+| Web shows `CORS` error          | Backend not reachable | Ensure port 8000 open, restart containers                  |
+| “Invalid credentials” on login  | Wrong org or user     | Use org `acme-001` or register new                         |
+| Booking fails                   | Missing demo policy   | Confirm MySQL seed executed (see `mysql-init/00_init.sql`) |
+
+---
+
+## 🧾 Example cURL Calls
+
+### Login → Get Token
+
+```bash
+curl -X POST http://localhost:8000/auth/token \
+  -H 'X-Org-External-Id: acme-001' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'username=admin@acme.com&password=secret'
+```
+
+### Get Trips (authorized)
+
+```bash
+curl -H "Authorization: Bearer <your_token>" \
+     -H "X-Org-External-Id: acme-001" \
+     http://localhost:8000/trips
+```
+
+---
+
+## 🧱 Tear Down
+
+```bash
+docker compose down -v
+```
+
+This removes containers, volumes, and the temporary database.
+
+---
+
+## 💡 Next Steps
+
+* Integrate **SSO (Okta / AzureAD)** for enterprise login
+* Add **AI-powered policy recommendations**
+* Deploy to **AWS ECS + RDS**
+* Add **role-based dashboards** and **expense analytics**
+
+---
+
+## 🖼 Suggested Repo Structure
+
+```
+/docs/banner.png
+/frontend/ (laasy-webclient-auth)
+/backend/ (laasy-backend-mysql-jwt)
+/devcorptravel_sql/ (schema & seeds)
+.github/workflows/ (CI/CD pipelines)
+docker-compose.yml
+README.md
+```
+
+---
+
+## 🧾 License
+
+© 2025 **LaaSy Inc.**
+For internal demo and non-commercial evaluation use only.
