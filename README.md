@@ -323,5 +323,3 @@ Future extension: integrate OpenAI, VertexAI, or Bedrock for real recommendation
 
 © 2025 **LaaSy Inc.** – All Rights Reserved.
 Use restricted to internal demo, client proof-of-concept, and evaluation.
-
-```
