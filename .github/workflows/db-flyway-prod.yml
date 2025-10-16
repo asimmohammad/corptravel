@@ -1,0 +1,23 @@
+name: DB Migrate (Flyway, prod)
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - devcorptravel_sql/flyway/**
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    env:
+      FLYWAY_URL: jdbc:mysql://${{ secrets.MYSQL_HOST }}:${{ secrets.MYSQL_PORT || 3306 }}/${{ secrets.MYSQL_DB || 'devcorptravel' }}
+      FLYWAY_USER: ${{ secrets.MYSQL_USER }}
+      FLYWAY_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Flyway migrate
+        uses: flyway/flyway-action@v2
+        with:
+          url: ${{ env.FLYWAY_URL }}
+          user: ${{ env.FLYWAY_USER }}
+          password: ${{ env.FLYWAY_PASSWORD }}
+          locations: filesystem:devcorptravel_sql/flyway
+          command: migrate

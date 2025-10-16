@@ -1,0 +1,24 @@
+name: DB Update (Liquibase, prod)
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - devcorptravel_sql/liquibase/**
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Liquibase Update
+        uses: liquibase/liquibase-github-action@v4.27.0
+        with:
+          operation: update
+          classpath: devcorptravel_sql/liquibase
+          changeLogFile: devcorptravel_sql/liquibase/changelog-master.yaml
+          url: jdbc:mysql://${{ secrets.MYSQL_HOST }}:${{ secrets.MYSQL_PORT || 3306 }}/${{ secrets.MYSQL_DB || 'devcorptravel' }}
+          username: ${{ secrets.MYSQL_USER }}
+          password: ${{ secrets.MYSQL_PASSWORD }}
