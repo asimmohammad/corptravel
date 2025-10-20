@@ -1,0 +1,46 @@
+name: MVP Performance & Observability Tests
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  performance-test:
+    name: Run k6 Performance Tests
+    runs-on: ubuntu-latest
+
+    env:
+      BASE_URL: http://localhost:8000
+      ORG: acme-001
+      USER: admin@acme.com
+      PASS: secret
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnupg ca-certificates
+          curl -s https://dl.k6.io/key.gpg | sudo apt-key add -
+          echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install -y k6
+
+      - name: Run MVP Smoke Test
+        working-directory: ./performance_observability/perf
+        run: |
+          k6 run -e BASE_URL=$BASE_URL \
+                 -e ORG=$ORG \
+                 -e USER=$USER \
+                 -e PASS=$PASS \
+                 k6_mvp_smoke.js
+
+      - name: Upload k6 Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-performance-report
+          path: ~/.k6/results/
