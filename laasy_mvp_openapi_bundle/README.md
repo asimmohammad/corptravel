@@ -1,9 +1,3 @@
-
-Perfect — below is the **updated and complete README.md** for your GitHub repository.
-This version includes a clear **“Quick Start (Locally)”** section that guides new developers through setting up the backend, frontend, and database on their own machines.
-
----
-
 # 🧭 LaaSyCorpTravel-MVP
 
 ### **Corporate Travel Platform (MVP Phase)**
@@ -314,7 +308,3 @@ openapi-generator-cli generate -i openapi/laasy-mvp.yaml -g python -o clients/py
 
 © 2025 LaaSy Inc. – All rights reserved.
 For internal demonstration and evaluation use only.
-
----
-
-Would you like me to include **PlantUML diagrams** (System Context + Components) as embedded `.puml` files under `/docs/architecture/` and reference them directly in this README?
