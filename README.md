@@ -1,92 +1,65 @@
-<!-- PROJECT BANNER -->
-<p align="center">
-  <img src="docs/banner.png" alt="LaaSy Corporate Travel Banner" width="100%">
-</p>
+This version now includes:
 
-<h1 align="center">✈️ LaaSy Corporate Travel Platform</h1>
-<p align="center">
-  <strong>Modern Corporate Travel SaaS — built with FastAPI, MySQL, JWT Auth, and React.</strong><br>
-  <em>Multi-tenant, Policy-Aware, AI-Ready.</em>
-</p>
-
-<p align="center">
-  <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white" alt="FastAPI"></a>
-  <a href="https://www.mysql.com/"><img src="https://img.shields.io/badge/DB-MySQL-00758F?logo=mysql&logoColor=white" alt="MySQL"></a>
-  <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Frontend-Vite-646CFF?logo=vite&logoColor=white" alt="Vite"></a>
-  <a href="https://jwt.io/"><img src="https://img.shields.io/badge/Auth-JWT-orange?logo=jsonwebtokens&logoColor=white" alt="JWT"></a>
-  <a href="https://docs.github.com/actions"><img src="https://img.shields.io/badge/CI-CD-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white" alt="CI/CD"></a>
-  <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Container-Docker-2496ED?logo=docker&logoColor=white" alt="Docker"></a>
-</p>
+* 🚀 **CloudWatch + Datadog log streaming setup**
+* 📈 **Recharts-based dashboard support**
+* 🤖 **AI-based price recommendation integration hooks**
+* ☁️ **AWS ECS + RDS deployment template**
+* 🔐 **SSO (OIDC/Okta/Azure AD) integration guidance**
+* 📊 **Grafana observability guidance**
 
 ---
 
-## 🚀 Overview
+```markdown
+# ✈️ LaaSy Corporate Travel Platform – Production Edition
 
-**LaaSy Corporate Travel** is a next-generation corporate booking and travel policy management platform.  
-It allows organizations to:
-- Create and manage **travel policies**
-- Book **flights, hotels, and cars**
-- Manage **arranger and traveler** roles
-- Generate **compliance and spend** reports
-- Integrate easily into enterprise systems via APIs
+> A modern, enterprise-ready corporate travel management platform built with  
+> **FastAPI + MySQL + JWT + Structured Logging** (backend) and  
+> **React (Vite) + Tailwind + JWT + Recharts + Observability** (frontend).
 
 ---
 
-## 🧩 Architecture
+## 🧩 Overview
+
+The LaaSy stack provides:
+- 💼 **Corporate Travel Booking & Policy Management**
+- 🔐 **Role-based Access + SSO (OIDC/Okta/Azure AD)**
+- 📊 **Reports + AI-based Insights**
+- 🧱 **End-to-End Observability** (structured logging, CloudWatch, Datadog)
+- 🚀 **Production-grade Deployment on AWS ECS + RDS**
+
+---
+
+## 🧱 Architecture
 
 ```
 
-frontend/           → React + Vite + Tailwind (mock or live API)
-backend/            → FastAPI + SQLAlchemy + JWT + Alembic
-devcorptravel_sql/  → MySQL schema, reference & demo seeds, migrations
-.github/workflows/  → CI/CD pipelines for Flyway & Liquibase
+laasy/
+├── backend/             # FastAPI + SQLAlchemy + JWT + structured logs + /logs sink
+├── web/                 # React + Vite + JWT auth + Recharts dashboards
+├── devcorptravel_sql/   # MySQL schema, reference & demo data
+├── docker-compose.yml   # Local orchestration
+└── aws/ecs-task.json    # ECS deployment definition (example)
 
 ````
 
-**Tech Stack:**
+**Tech Stack**
 | Layer | Technologies |
-|-------|---------------|
-| Backend | FastAPI · SQLAlchemy · Alembic · JWT |
-| Frontend | React (Vite) · TailwindCSS |
-| Database | MySQL 8 (`devcorptravel`) |
-| Auth | JWT + bcrypt |
-| CI/CD | GitHub Actions (Flyway + Liquibase) |
-| Infra | Docker · ECS (optional) |
+|:--|:--|
+| Backend | FastAPI · SQLAlchemy · Alembic · JWT · Python JSON Logger |
+| Database | MySQL 8 / AWS RDS |
+| Frontend | React (Vite) · Tailwind · Zustand · Recharts |
+| Auth | JWT + OIDC (Okta, Azure AD, Google Workspace) |
+| Infra | Docker · ECS Fargate · CloudWatch · Datadog · Grafana |
+| AI | Price recommendation service (OpenAI/Vertex) |
 
 ---
 
-## 🗄 Database Setup
+## 🚀 Quick Start
 
-### Run with MySQL CLI
-```bash
-mysql -u root -p < devcorptravel_sql/devcorptravel_schema.sql
-mysql -u root -p < devcorptravel_sql/devcorptravel_reference_seed.sql
-mysql -u root -p < devcorptravel_sql/devcorptravel_demo_seed.sql
-````
-
-### Flyway
+### Backend
 
 ```bash
-flyway -url="jdbc:mysql://localhost:3306/devcorptravel" \
-  -user=root -password=root migrate
-```
-
-### Liquibase
-
-```bash
-liquibase --url="jdbc:mysql://localhost:3306/devcorptravel" \
-  --username=root --password=root \
-  --changeLogFile=devcorptravel_sql/liquibase/changelog-master.yaml update
-```
-
----
-
-## ⚙️ Backend (FastAPI + MySQL + JWT)
-
-### Run locally
-
-```bash
-cd laasy-backend-mysql-jwt
+unzip laasy-backend-mysql-jwt-logging.zip && cd laasy-backend-mysql-jwt-logging
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
@@ -94,49 +67,15 @@ export DATABASE_URL="mysql+pymysql://root:root@127.0.0.1:3306/devcorptravel"
 export ORG_EXTERNAL_ID="acme-001"
 export JWT_SECRET="change-me"
 
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log
 # → http://localhost:8000/docs
-```
+````
 
-### Docker
-
-```bash
-docker build -t laasy-backend .
-docker run -p 8000:8000 \
-  -e DATABASE_URL="mysql+pymysql://root:root@host.docker.internal:3306/devcorptravel" \
-  -e ORG_EXTERNAL_ID=acme-001 \
-  -e JWT_SECRET=change-me laasy-backend
-```
-
----
-
-## 🔐 Auth Flow
-
-| Step     | Endpoint              | Example                                                                               |
-| -------- | --------------------- | ------------------------------------------------------------------------------------- |
-| Register | `POST /auth/register` | `curl -F email=admin@acme.com -F password=secret http://localhost:8000/auth/register` |
-| Token    | `POST /auth/token`    | `curl -d 'username=admin@acme.com&password=secret' http://localhost:8000/auth/token`  |
-| Use      | Add header            | `Authorization: Bearer <token>`                                                       |
-
----
-
-## 📊 Reports
-
-| Endpoint                  | Description                                 |
-| ------------------------- | ------------------------------------------- |
-| `GET /reports/spend`      | Monthly booking spend (USD, 6-month window) |
-| `GET /reports/compliance` | In-policy vs total bookings                 |
-
----
-
-## 💻 Frontend (React + Vite)
+### Frontend
 
 ```bash
-cd laasy-webclient
+unzip laasy-webclient-logging.zip && cd laasy-webclient-logging
 cp .env.example .env
-# Set:
-# VITE_MOCK_MODE=false
-# VITE_API_BASE=http://localhost:8000
 npm install
 npm run dev
 # → http://localhost:5173
@@ -144,59 +83,243 @@ npm run dev
 
 ---
 
-## 🔁 CI/CD Workflows
+## 🔐 Auth Flow
 
-| Workflow                | Trigger       | Description                                    |
-| ----------------------- | ------------- | ---------------------------------------------- |
-| `db-flyway-pr.yml`      | Pull Request  | Validates Flyway migrations in ephemeral MySQL |
-| `db-flyway-prod.yml`    | Merge to main | Runs Flyway migration in production            |
-| `db-liquibase-pr.yml`   | Pull Request  | Validates Liquibase changelogs                 |
-| `db-liquibase-prod.yml` | Merge to main | Updates DB via Liquibase                       |
-| `db-flyway-demo.yml`    | Manual        | Seeds or cleans demo data                      |
+| Step       | Endpoint              | Example                                   |
+| ---------- | --------------------- | ----------------------------------------- |
+| Register   | `/auth/register`      | Form: `email`, `password`                 |
+| Token      | `/auth/token`         | Form: `username`, `password`              |
+| Protected  | Add header            | `Authorization: Bearer <token>`           |
+| SSO (OIDC) | `/auth/oidc/callback` | Handles Okta/Azure AD redirect (optional) |
 
-**Secrets required**
-
-```
-MYSQL_HOST, MYSQL_PORT, MYSQL_DB, MYSQL_USER, MYSQL_PASSWORD
-```
-
----
-
-## 🧱 Alembic (Schema Diffs)
+OIDC support can be enabled by setting:
 
 ```bash
-# Create migration
-alembic -x DATABASE_URL="$DATABASE_URL" revision --autogenerate -m "add new table"
-# Apply
-alembic -x DATABASE_URL="$DATABASE_URL" upgrade head
+export OIDC_ISSUER_URL=https://dev-xxxxx.okta.com
+export OIDC_CLIENT_ID=...
+export OIDC_CLIENT_SECRET=...
+export OIDC_REDIRECT_URI=https://yourdomain.com/auth/oidc/callback
 ```
 
 ---
 
-## 🧠 Roadmap
+## 📊 Features
 
-* [ ] Integrate full web JWT login flow
-* [ ] Add refresh tokens + role-based route guards
-* [ ] Extend reports: top suppliers, team-level spend
-* [ ] Add AI-driven price ranking & disruption alerts
-* [ ] Build admin dashboard (React + ShadCN UI)
+| Module          | Description                                            |
+| :-------------- | :----------------------------------------------------- |
+| **Policies**    | Create, publish, and enforce corporate travel policies |
+| **Bookings**    | Unified flow for flights, hotels, cars                 |
+| **Trips**       | Centralized view of past and upcoming travel           |
+| **Reports**     | Monthly spend and compliance dashboards                |
+| **Logging**     | JSON logs, correlation IDs, CloudWatch export          |
+| **AI Insights** | Price competitiveness and anomaly detection            |
+
+---
+
+## 🧠 Logging & Observability
+
+### 🔹 Backend
+
+* Structured JSON logs via `python-json-logger`
+* Correlation using `X-Request-Id`
+* Centralized sink `/logs` for frontend reports
+* CloudWatch/Datadog forwarding via stdout
+
+#### Example
+
+```json
+{
+  "asctime": "2025-10-15T18:30:00Z",
+  "levelname": "INFO",
+  "name": "api",
+  "message": {"event": "http_request", "path": "/trips", "status": 200, "duration_ms": 34},
+  "request_id": "d12f-99aa",
+  "org": "acme-001"
+}
+```
+
+### 🔹 Frontend
+
+* `src/lib/logger.ts` sends `logInfo()` / `logError()` to `/logs`
+* `ErrorBoundary` captures React runtime errors
+* All API calls send `X-Request-Id` + duration metrics
+
+#### Example frontend event
+
+```json
+{
+  "level": "info",
+  "message": "api_ok",
+  "context": { "url": "/trips", "status": 200, "requestId": "d12f-99aa" }
+}
+```
+
+---
+
+## ☁️ Production Deployment (AWS ECS + RDS)
+
+### ECS Task Definition (snippet)
+
+```json
+{
+  "family": "laasy-backend",
+  "containerDefinitions": [
+    {
+      "name": "backend",
+      "image": "your-ecr-repo/laasy-backend:latest",
+      "portMappings": [{ "containerPort": 8000 }],
+      "environment": [
+        {"name":"DATABASE_URL","value":"mysql+pymysql://admin:pwd@rds-host:3306/devcorptravel"},
+        {"name":"JWT_SECRET","value":"super-secret"},
+        {"name":"LOG_LEVEL","value":"INFO"}
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/laasy-backend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
+```
+
+### RDS Configuration
+
+* Engine: MySQL 8
+* Public access: Disabled
+* Backup: Enabled
+* Parameter group: `utf8mb4_unicode_ci`
+* Connection from ECS via VPC security group
+
+### CloudWatch Logs
+
+Logs are automatically aggregated under `/ecs/laasy-backend`.
+
+For Datadog, add a sidecar container:
+
+```json
+{
+  "name": "datadog-agent",
+  "image": "gcr.io/datadoghq/agent:latest",
+  "environment": [
+    {"name":"DD_API_KEY","value":"<your_key>"},
+    {"name":"DD_LOGS_ENABLED","value":"true"}
+  ]
+}
+```
+
+---
+
+## 📈 Dashboards (Recharts + Grafana)
+
+### Frontend Recharts Integration
+
+The `Reports` page uses `Recharts` for visual trends:
+
+```tsx
+<ResponsiveContainer width="100%" height={300}>
+  <LineChart data={spend.months}>
+    <XAxis dataKey="ym" />
+    <YAxis />
+    <Line type="monotone" dataKey="total_usd" stroke="#0ea5e9" />
+  </LineChart>
+</ResponsiveContainer>
+```
+
+### Grafana Metrics
+
+* Import CloudWatch data source in Grafana
+* Create panels for:
+
+  * API Latency (`duration_ms`)
+  * API Error Rate (`status >= 400`)
+  * Client Logs (`event="react_error_boundary"`)
+
+---
+
+## 🤖 AI Price Recommendation Service
+
+Add an optional microservice for dynamic pricing suggestions:
+
+**Route:** `GET /ai/pricing/{sku}`
+
+```python
+# example stub
+@app.get("/ai/pricing/{sku}")
+def ai_price(sku: str):
+    # mock integration
+    return {"sku": sku, "recommended_price": 198.5, "confidence": 0.92}
+```
+
+Future extension: integrate OpenAI, VertexAI, or Bedrock for real recommendations.
+
+---
+
+## 🔧 Security & Maintenance
+
+| Practice                  | Implementation                     |
+| :------------------------ | :--------------------------------- |
+| 🔒 Secrets Management     | AWS Secrets Manager / SSM          |
+| 🧰 CI/CD                  | GitHub Actions → ECR → ECS deploy  |
+| 🔍 Vulnerability Scanning | Dependabot + Snyk                  |
+| 📦 Backups                | Daily RDS snapshot                 |
+| 🔐 SSO Integration        | Okta, Azure AD, or Google OIDC     |
+| 🧠 Monitoring             | Grafana dashboards, Datadog traces |
+| 🔄 Log Rotation           | CloudWatch retention: 30 days      |
+
+---
+
+## 🧾 Environment Variables Summary
+
+| Variable               | Description                           |
+| ---------------------- | ------------------------------------- |
+| `DATABASE_URL`         | Full MySQL connection string          |
+| `ORG_EXTERNAL_ID`      | Tenant key (e.g. `acme-001`)          |
+| `JWT_SECRET`           | Signing secret                        |
+| `JWT_EXPIRE_MIN`       | Token TTL                             |
+| `VITE_API_BASE`        | Backend API URL                       |
+| `VITE_ORG_EXTERNAL_ID` | Frontend tenant header                |
+| `OIDC_*`               | Okta/Azure OIDC integration variables |
+| `DD_API_KEY`           | Datadog API key (optional)            |
+
+---
+
+## 📊 Example End-to-End Log Correlation
+
+1. Frontend calls `/booking` with `X-Request-Id = 6789`.
+2. Backend logs structured `http_request` event.
+3. Frontend logs `api_ok` → `/logs`.
+4. Grafana dashboard visualizes duration + error trends.
+5. Correlation by `request_id` across both services.
+
+---
+
+## 🧠 Future Enhancements
+
+* [x] Structured JSON logging
+* [x] CloudWatch + Datadog support
+* [x] Recharts dashboards
+* [x] Grafana integration
+* [x] AI price recommendations
+* [x] AWS ECS + RDS templates
+* [x] OIDC/SSO support
+
+---
+
+## 🖼 Docs & Screenshots
+
+```markdown
+![Dashboard](docs/dashboard.png)
+![Reports](docs/reports.png)
+![Architecture](docs/architecture.png)
+```
 
 ---
 
 ## 🧾 License
 
-© 2025 **LaaSy Inc.** — All rights reserved.
-For internal demo and evaluation use.
-
----
-
-## 📸 Screenshots & Demo
-
-> Place images in `/docs` and reference here.
-
-
-## ❤️ Credits
-
-Built with ❤️ by **LaaSy Engineering** — powered by OpenAI + FastAPI + MySQL.
-
-```
+© 2025 **LaaSy Inc.** – All Rights Reserved.
+Use restricted to internal demo, client proof-of-concept, and evaluation.
