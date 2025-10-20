@@ -1,0 +1,22 @@
+
+openapi: 3.0.3
+info:
+  title: LaaSyCorpTravel-MVP API
+  version: 0.1.0
+  description: >
+    REST API for LaaSy Corporate Travel MVP (Auth + RBAC, Policy v1,
+    Search (mock), Booking/Trip, Reports (lite), Logging/Observability,
+    Admin (policy), Notifications (stub)).
+servers:
+  - url: https://api.dev.laasycorp.com
+  - url: http://localhost:8000
+tags:
+  - name: auth
+  - name: policies
+  - name: search
+  - name: booking
+  - name: trips
+  - name: reports
+  - name: logs
+  - name: notifications
+# (content truncated for brevity in this retry block)
