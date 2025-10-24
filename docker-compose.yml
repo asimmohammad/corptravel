@@ -1,0 +1,23 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: "mysql+pymysql://laasyadmin:TD78OaS*obm4})Uyw3HpJ![zc5DN@dev-aurora-cluster.cluster-ckz3frdf4zwt.us-east-1.rds.amazonaws.com:3306/devcorptravel"
+
+
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    environment:
+      VITE_API_BASE: http://localhost:8000
+      VITE_ORG_EXTERNAL_ID: acme-001
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
