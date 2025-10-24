@@ -1,0 +1,38 @@
+name: API Contract – Validate & Generate Clients
+
+on:
+  pull_request:
+    paths:
+      - "openapi/**"
+      - "tools/api-contract/**"
+  workflow_dispatch:
+
+jobs:
+  validate-and-generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node + swagger-cli
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm i -g @apidevtools/swagger-cli @openapitools/openapi-generator-cli
+
+      - name: Validate OpenAPI Spec
+        run: swagger-cli validate openapi/laasy-mvp.yaml
+
+      - name: Generate TypeScript Axios Client
+        run: openapi-generator-cli generate -i openapi/laasy-mvp.yaml -g typescript-axios -o tools/api-contract/clients/ts-axios
+
+      - name: Generate Python Client
+        run: openapi-generator-cli generate -i openapi/laasy-mvp.yaml -g python -o tools/api-contract/clients/python
+
+      - name: Upload Generated Clients
+        uses: actions/upload-artifact@v4
+        with:
+          name: laasy-api-clients
+          path: |
+            tools/api-contract/clients/ts-axios/**
+            tools/api-contract/clients/python/**

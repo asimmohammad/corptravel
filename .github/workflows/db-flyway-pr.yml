@@ -1,0 +1,29 @@
+name: DB Validate (Flyway, PR)
+on:
+  pull_request:
+    paths:
+      - devcorptravel_sql/flyway/**
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: devcorptravel
+        ports: [ "3306:3306" ]
+    env:
+      FLYWAY_URL: jdbc:mysql://127.0.0.1:3306/devcorptravel
+      FLYWAY_USER: root
+      FLYWAY_PASSWORD: root
+    steps:
+      - uses: actions/checkout@v4
+      - name: Flyway migrate (ephemeral)
+        uses: flyway/flyway-action@v2
+        with:
+          url: ${{ env.FLYWAY_URL }}
+          user: ${{ env.FLYWAY_USER }}
+          password: ${{ env.FLYWAY_PASSWORD }}
+          locations: filesystem:devcorptravel_sql/flyway
+          command: migrate

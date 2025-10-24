@@ -1,0 +1,30 @@
+name: DB Validate (Liquibase, PR)
+on:
+  pull_request:
+    paths:
+      - devcorptravel_sql/liquibase/**
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: devcorptravel
+        ports: [ "3306:3306" ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Liquibase Update (ephemeral)
+        uses: liquibase/liquibase-github-action@v4.27.0
+        with:
+          operation: update
+          classpath: devcorptravel_sql/liquibase
+          changeLogFile: devcorptravel_sql/liquibase/changelog-master.yaml
+          url: jdbc:mysql://127.0.0.1:3306/devcorptravel
+          username: root
+          password: root

@@ -1,0 +1,14 @@
+# p95 Latency
+fields @timestamp, @message, message.duration_ms as d
+| filter message.event = "http_request"
+| stats pct(d, 95) by bin(5m)
+
+# Error Rate
+fields @timestamp, @message, message.status as s
+| filter message.event = "http_request"
+| stats 100 * sum(if(s >= 500, 1, 0)) / count(*) as error_pct by bin(5m)
+
+# Booking Success
+fields @timestamp, @message
+| filter message.event = "client_log" and message.context.event = "BookingConfirmed"
+| stats count(*) by bin(5m)
