@@ -4,7 +4,7 @@ import { login } from '../lib/api'
 import { useAuthStore } from '../store'
 
 export default function Login() {
-  const [email, setEmail] = useState('admin@laasy.com')
+  const [email, setEmail] = useState('admin@acme.com')
   const [password, setPassword] = useState('password')
   const [loading, setLoading] = useState(false)
   const nav = useNavigate()
@@ -37,7 +37,7 @@ export default function Login() {
         <button className="btn-primary w-full" disabled={loading}>
           {loading ? 'Signing in…' : 'Sign in'}
         </button>
-        <p className="text-sm text-gray-600">Use any email. <em>@laasy.com</em> gets admin role in mock mode.</p>
+        <p className="text-sm text-gray-600">Use any email. <em>@acme.com</em> gets admin role in mock mode.</p>
       </form>
     </div>
   )

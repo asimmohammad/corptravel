@@ -26,7 +26,7 @@ npm run dev
 # visit http://localhost:5173
 ```
 
-- Log in with any email. Use `@laasy.com` domain to see admin menu in mock mode.
+- Log in with any email. Use `@acme.com` domain to see admin menu in mock mode.
 - Toggle real API by setting `VITE_MOCK_MODE=false` and `VITE_API_BASE=https://api.example.com`.
 
 ---
