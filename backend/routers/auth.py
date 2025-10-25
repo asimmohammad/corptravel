@@ -15,12 +15,24 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    # Simple password check (in production, use proper password hashing)
-    password_hash = hashlib.sha256(body.password.encode()).hexdigest()
-    if user.password_hash != password_hash:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    # For demo purposes, accept any password if user exists and has no password_hash
+    # In production, implement proper password verification
+    if user.password_hash:
+        password_hash = hashlib.sha256(body.password.encode()).hexdigest()
+        if user.password_hash != password_hash:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
     
     # Generate a simple token (in production, use JWT)
     access_token = secrets.token_urlsafe(32)
     
-    return {"access_token": access_token, "role": user.role}
+    # Determine role based on email or use default
+    if "admin" in user.email:
+        role = "OrgAdmin"
+    elif "tmgr" in user.email:
+        role = "TravelManager"
+    elif "arranger" in user.email:
+        role = "Arranger"
+    else:
+        role = "Traveler"
+    
+    return {"access_token": access_token, "role": role}
