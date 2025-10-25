@@ -85,7 +85,7 @@ class UserDB(Base):
     
     # Relationships
     bookings = relationship("BookingDB", back_populates="user")
-    trips = relationship("TripDB", back_populates="user")
+    # trips = relationship("TripDB", back_populates="user")  # Removed due to schema mismatch
 
 
 class PolicyDB(Base):
@@ -95,6 +95,7 @@ class PolicyDB(Base):
     org_id = Column(Integer, nullable=False)
     name = Column(String(200), nullable=False)
     status = Column(String(40), nullable=False, default="draft")
+    created_by = Column(Integer, nullable=False)
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
     
@@ -118,25 +119,26 @@ class BookingDB(Base):
     # Relationships
     user = relationship("UserDB", back_populates="bookings")
     policy = relationship("PolicyDB", back_populates="bookings")
-    trips = relationship("TripDB", back_populates="booking")
+    # trips = relationship("TripDB", back_populates="booking")  # Removed due to schema mismatch
 
 
 class TripDB(Base):
     __tablename__ = "trips"
     
-    id = Column(String(50), primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    booking_id = Column(String(50), ForeignKey("bookings.id"), nullable=True)
-    segments = Column(JSON, nullable=False)  # Store trip segments as JSON
+    id = Column(Integer, primary_key=True, index=True)
+    org_id = Column(Integer, nullable=False)
+    traveler_id = Column(Integer, nullable=False)
+    booking_id = Column(Integer, nullable=True)
     start_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=False)
-    status = Column(String(50), default="upcoming")
+    status = Column(String(40), default="upcoming")
+    trip_title = Column(String(200))
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
     
-    # Relationships
-    user = relationship("UserDB", back_populates="trips")
-    booking = relationship("BookingDB", back_populates="trips")
+    # Relationships - removed for now due to schema mismatch
+    # user = relationship("UserDB", back_populates="trips")
+    # booking = relationship("BookingDB", back_populates="trips")
 
 
 class ApiKeyDB(Base):

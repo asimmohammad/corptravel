@@ -5,7 +5,7 @@ from db import get_db, engine, Base
 from models import Policy  # etc.
 
 # Import routers
-from routers import auth, policies, booking, trips, travelers, search, arranger, notifications, reports, api_keys
+from routers import auth, policies, booking, trips, travelers, search, arranger, notifications, reports
 
 logging.basicConfig(level=logging.INFO)
 
@@ -22,7 +22,6 @@ def health_check(db=Depends(get_db)):
 
 # Include routers
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
-app.include_router(api_keys.router, prefix="/api-keys", tags=["api-keys"])
 app.include_router(policies.router, prefix="/policies", tags=["policies"])
 app.include_router(booking.router, prefix="/bookings", tags=["bookings"])
 app.include_router(trips.router, prefix="/trips", tags=["trips"])

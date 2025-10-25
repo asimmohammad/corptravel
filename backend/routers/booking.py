@@ -2,18 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from db import get_db
 from models import BookingRequest, BookingResponse, BookingDB, UserDB
-from auth import verify_api_key, require_permissions
 from datetime import datetime
 import secrets
 
 router = APIRouter()
 
 @router.post("", response_model=BookingResponse)
-def create_booking(
-    req: BookingRequest, 
-    db: Session = Depends(get_db),
-    current_api_key = Depends(require_permissions(["bookings"]))
-):
+def create_booking(req: BookingRequest, db: Session = Depends(get_db)):
     # Generate a unique booking ID
     booking_id = "CONF" + secrets.token_hex(8).upper()
     
