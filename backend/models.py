@@ -14,6 +14,20 @@ class LoginResponse(BaseModel):
     access_token: str
     role: Literal["OrgAdmin", "Traveler", "Arranger", "TravelManager"]
 
+class InitiateRegistrationRequest(BaseModel):
+    email: str
+
+class InitiateRegistrationResponse(BaseModel):
+    existing: bool
+
+class RegisterRequest(BaseModel):
+    email: str
+    password: str
+
+class RegisterResponse(BaseModel):
+    access_token: str
+    role: str
+
 class PolicyRule(BaseModel):
     key: str
     op: Literal["<=", "<", ">=", ">", "==", "in"]
@@ -23,7 +37,7 @@ class Policy(BaseModel):
     id: int
     name: str
     status: Literal["draft", "published"]
-    rules: List[PolicyRule]
+    rules: Optional[List[PolicyRule]] = None
 
 class PolicyCreate(BaseModel):
     name: str
