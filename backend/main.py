@@ -1,5 +1,6 @@
 import logging
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from db import get_db, engine, Base
 from models import Policy  # etc.
@@ -10,6 +11,15 @@ from routers import auth, policies, booking, trips, travelers, search, arranger,
 logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(title="LaaSyCorpTravel-MVP APIs")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:3000", "http://localhost:8080"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
