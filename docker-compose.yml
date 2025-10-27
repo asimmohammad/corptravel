@@ -6,8 +6,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: "mysql+pymysql://laasyadmin:TD78OaS*obm4})Uyw3HpJ![zc5DN@dev-aurora-cluster.cluster-ckz3frdf4zwt.us-east-1.rds.amazonaws.com:3306/devcorptravel"
-
+      DATABASE_URL: <add string>
 
 
   web:
